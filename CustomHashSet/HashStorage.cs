@@ -14,6 +14,7 @@ namespace CustomHashSet
 
         public void Add(T element)
         {
+            int listIndex = CalculateHash(element);
 
         }
 
@@ -22,9 +23,16 @@ namespace CustomHashSet
 
         }
 
-        public void Contains(T element)
+        public bool Contains(T element)
         {
+            int listIndex = CalculateHash(element);
 
+            if (listIndex >= _storage.Length)
+            {
+                return false;
+            }
+
+            return _storage[listIndex].Contains(element);
         }
 
         private int CalculateHash(T element)
@@ -34,5 +42,7 @@ namespace CustomHashSet
 
             return (int)Math.Round(elementHashCode * constKey % 1 * _storage.Length);
         }
+
+        HashSet<int> sss = new HashSet<int>();
     }
 }
