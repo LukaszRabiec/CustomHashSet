@@ -5,17 +5,41 @@ namespace CustomHashSet
 {
     public class HashStorage<T> where T : IConvertible
     {
+        private const int _initSize = 16;
+
         private LinkedList<T>[] _storage;
+        private int _numberOfElements;
 
         public HashStorage()
         {
-            _storage = new LinkedList<T>[16];
+            _storage = new LinkedList<T>[_initSize];
+            _numberOfElements = 0;
         }
 
-        public void Add(T element)
+        public bool Add(T element)
         {
             int listIndex = CalculateHash(element);
+            bool elementIsInStorage = Contains(element);
 
+            if (elementIsInStorage)
+            {
+                return false;
+            }
+
+            if (_storage[listIndex] == null)
+            {
+                _storage[listIndex] = new LinkedList<T>();
+            }
+
+            _storage[listIndex].AddLast(element);
+            _numberOfElements++;
+
+            if (_numberOfElements > _storage.Length)
+            {
+                IncreaseStorage();
+            }
+
+            return true;
         }
 
         public void Remove(T element)
@@ -32,17 +56,40 @@ namespace CustomHashSet
                 return false;
             }
 
-            return _storage[listIndex].Contains(element);
+            if (_storage[listIndex] != null)
+            {
+                return _storage[listIndex].Contains(element);
+            }
+
+            return false;
         }
 
         private int CalculateHash(T element)
         {
-            int elementHashCode = element.GetHashCode();
+            int elementHashCode = Math.Abs(element.GetHashCode());
             double constKey = (Math.Sqrt(5) - 1) / 2;
 
             return (int)Math.Round(elementHashCode * constKey % 1 * _storage.Length);
         }
 
-        HashSet<int> sss = new HashSet<int>();
+        private void IncreaseStorage()
+        {
+            _numberOfElements = 0;
+            int newSize = _storage.GetLength(0) * 2;
+
+            var oldStorage = _storage;
+            _storage = new LinkedList<T>[newSize];
+
+            for (int i = 0; i < newSize; i++)
+            {
+                if (oldStorage[i] != null)
+                {
+                    foreach (var element in oldStorage[i])
+                    {
+                        Add(element);
+                    }
+                }
+            }
+        }
     }
 }
