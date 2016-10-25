@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CustomHashSet
 {
     public class HashStorage<T> where T : IConvertible
     {
+        private delegate int HashingFunction(T element, int storageSize);
+        private readonly HashingFunction _calculateHash;
         private const int _minSize = 16;
 
         private LinkedList<T>[] _storage;
@@ -12,13 +15,19 @@ namespace CustomHashSet
 
         public HashStorage()
         {
+            _calculateHash = CheckTypeAndGetHashingFunction();
             _storage = new LinkedList<T>[_minSize];
             _numberOfElements = 0;
         }
 
         public bool Add(T element)
         {
-            int listIndex = CalculateHash(element);
+            if (typeof(T) == typeof(double))
+            {
+                ValidateElementInDouble(element);
+            }
+
+            int listIndex = _calculateHash(element, _storage.GetLength(0));
             bool elementIsInStorage = Contains(element);
 
             if (elementIsInStorage)
@@ -44,7 +53,12 @@ namespace CustomHashSet
 
         public bool Remove(T element)
         {
-            int listIndex = CalculateHash(element);
+            if (typeof(T) == typeof(double))
+            {
+                ValidateElementInDouble(element);
+            }
+
+            int listIndex = _calculateHash(element, _storage.GetLength(0));
             bool elementIsInStorage = Contains(element);
 
             if (!elementIsInStorage)
@@ -65,7 +79,12 @@ namespace CustomHashSet
 
         public bool Contains(T element)
         {
-            int listIndex = CalculateHash(element);
+            if (typeof(T) == typeof(double))
+            {
+                ValidateElementInDouble(element);
+            }
+
+            int listIndex = _calculateHash(element, _storage.GetLength(0));
 
             if (listIndex >= _storage.Length)
             {
@@ -80,33 +99,31 @@ namespace CustomHashSet
             return false;
         }
 
-        public int IndexOf(T element)
+        public override string ToString()
         {
-            int listIndex = CalculateHash(element);
+            string resultString = "";
+            var stringBuilder = new StringBuilder();
 
-            if (_storage[listIndex] != null)
+            for (int listIndex = 0; listIndex < _storage.GetLength(0); listIndex++)
             {
-                int index = 0;
-                foreach (var item in _storage[listIndex])
-                {
-                    if (item.Equals(element))
-                    {
-                        return index;
-                    }
+                stringBuilder.Clear();
+                stringBuilder.Append($"[{listIndex}]: ");
 
-                    index++;
+                if (_storage[listIndex] != null)
+                {
+                    foreach (var item in _storage[listIndex])
+                    {
+                        stringBuilder.Append($"{item}, ");
+                    }
                 }
+
+                stringBuilder.Remove(stringBuilder.Length - 2, 2);
+                stringBuilder.Append(";\n");
+
+                resultString += stringBuilder;
             }
 
-            return -1;
-        }
-
-        private int CalculateHash(T element)
-        {
-            int elementHashCode = Math.Abs(element.GetHashCode());
-            double constKey = (Math.Sqrt(5) - 1) / 2;
-
-            return (int)Math.Round(elementHashCode * constKey % 1 * _storage.Length);
+            return resultString;
         }
 
         private void IncreaseStorage()
@@ -117,7 +134,7 @@ namespace CustomHashSet
             var oldStorage = _storage;
             _storage = new LinkedList<T>[newSize];
 
-            for (int i = 0; i < newSize; i++)
+            for (int i = 0; i < oldStorage.GetLength(0); i++)
             {
                 if (oldStorage[i] != null)
                 {
@@ -137,7 +154,7 @@ namespace CustomHashSet
             var oldStorage = _storage;
             _storage = new LinkedList<T>[newSize];
 
-            for (int i = 0; i < newSize; i++)
+            for (int i = 0; i < oldStorage.GetLength(0); i++)
             {
                 if (oldStorage[i] != null)
                 {
@@ -146,6 +163,33 @@ namespace CustomHashSet
                         Add(element);
                     }
                 }
+            }
+        }
+
+        private HashingFunction CheckTypeAndGetHashingFunction()
+        {
+            var type = typeof(T);
+
+            switch (type.ToString())
+            {
+                case "System.Int32":
+                    return HashingFunctions.CalculateHashForInt;
+                case "System.Double":
+                    return HashingFunctions.CalculateHashForDoubleFrom0To1;
+                case "System.String":
+                    return HashingFunctions.CalculateHashForString;
+                default:
+                    throw new Exception($"Type {typeof(T)} is illegal.");
+            }
+        }
+
+        private void ValidateElementInDouble(T element)
+        {
+            var convertedElement = Convert.ToDouble(element);
+
+            if (convertedElement < 0 || convertedElement > 1)
+            {
+                throw new ArgumentException("Double type values must be between 0 and 1.");
             }
         }
 
