@@ -55,7 +55,7 @@ namespace CustomHashSet
             _storage[listIndex].Remove(element);
             _numberOfElements--;
 
-            if (StorageLengthIsLargerThenMinSize() && ElementsDecreasedBy40Percent())
+            if (StorageLengthIsLargerThenMinSize() && ElementsDecreasedBy60PercentOfSize())
             {
                 DecreaseStorage();
             }
@@ -159,7 +159,7 @@ namespace CustomHashSet
             return _storage.GetLength(0) > _minSize;
         }
 
-        private bool ElementsDecreasedBy40Percent()
+        private bool ElementsDecreasedBy60PercentOfSize()
         {
             return _numberOfElements * 2.5 < _storage.GetLength(0);
         }
