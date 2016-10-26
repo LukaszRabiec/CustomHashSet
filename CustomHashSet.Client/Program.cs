@@ -1,14 +1,14 @@
-﻿using System;
-
-namespace CustomHashSet.Client
+﻿namespace CustomHashSet.Client
 {
-    class Program
+    using System;
+
+    internal class Program
     {
         private static readonly Random _rand = new Random(1);
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            int size = 32;
+            var size = 32;
 
             HashStorageWithInts(size);
             HashStorageWithDoubles(size);
@@ -25,9 +25,7 @@ namespace CustomHashSet.Client
             var data = GenerateIntData(size);
 
             foreach (var i in data)
-            {
                 hashStorage.Add(i);
-            }
 
             Console.WriteLine("---== INT ==---");
             Console.Write(hashStorage.ToString());
@@ -45,20 +43,16 @@ namespace CustomHashSet.Client
         {
             var data = new int[size];
 
-            for (int i = 0; i < size; i++)
-            {
+            for (var i = 0; i < size; i++)
                 data[i] = i;
-            }
 
             return data;
         }
 
         private static void RemoveSomeIntData(HashStorage<int> hashStorage, int removeSize)
         {
-            for (int i = 0; i < removeSize; i++)
-            {
+            for (var i = 0; i < removeSize; i++)
                 hashStorage.Remove(i);
-            }
         }
 
         // DOUBLE
@@ -69,9 +63,7 @@ namespace CustomHashSet.Client
             var data = GenerateDoubleData(size);
 
             foreach (var i in data)
-            {
                 hashStorage.Add(i);
-            }
 
             Console.WriteLine("---== DOUBLE ==---");
             Console.WriteLine(hashStorage.ToString());
@@ -92,10 +84,8 @@ namespace CustomHashSet.Client
         {
             var data = new double[size];
 
-            for (int i = 0; i < size; i++)
-            {
+            for (var i = 0; i < size; i++)
                 data[i] = _rand.NextDouble();
-            }
 
             return data;
         }
@@ -110,9 +100,7 @@ namespace CustomHashSet.Client
             hashStorage.Add("~~~~~");
 
             foreach (var i in data)
-            {
                 hashStorage.Add(i);
-            }
 
             Console.WriteLine("---== STRING ==---");
             Console.WriteLine(hashStorage.ToString());
@@ -122,10 +110,8 @@ namespace CustomHashSet.Client
         {
             var data = new string[127 - 33];
 
-            for (int i = 33; i <= 126; i++)
-            {
+            for (var i = 33; i <= 126; i++)
                 data[i - 33] = ((char)i).ToString();
-            }
 
             return data;
         }
