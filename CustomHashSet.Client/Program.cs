@@ -98,6 +98,7 @@
 
             hashStorage.Add("!!!");
             hashStorage.Add("~~~~~");
+            hashStorage.Add("cda");
 
             foreach (var i in data)
                 hashStorage.Add(i);

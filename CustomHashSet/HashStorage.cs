@@ -56,7 +56,7 @@
             _storage[listIndex].Remove(element);
             _numberOfElements--;
 
-            if (StorageLengthIsLargerThenMinSize() && ElementsDecreasedBy60PercentOfSize())
+            if (StorageLengthIsLargerThenMinSize() && ElementsDecreasedToFourtyPercentOfSize())
                 DecreaseStorage();
 
             return true;
@@ -164,7 +164,7 @@
             return _storage.GetLength(0) > _minSize;
         }
 
-        private bool ElementsDecreasedBy60PercentOfSize()
+        private bool ElementsDecreasedToFourtyPercentOfSize()
         {
             return _numberOfElements * 2.5 < _storage.GetLength(0);
         }
